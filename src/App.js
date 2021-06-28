@@ -1,6 +1,8 @@
 import { Component } from "react";
 import { connect } from "react-redux";
 import { fetchProductList } from './actions'
+import DataTable from './components/DataTable'
+import columns from './data/columns'
 import './App.css';
 
 class App extends Component {
@@ -20,7 +22,10 @@ class App extends Component {
           <div>Loading . . .</div>
         ) : this.props.error ? (
           <div>Failed {this.props.error && this.props.error.message}</div>
-        ) : <div>Success</div>}
+        ) : this.props.data && this.props.data.length > 0 ? (
+          <DataTable columns={columns} rows={this.props.data} />
+        ) : <div />}
+
       </div>
     );
   }
