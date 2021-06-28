@@ -16,6 +16,7 @@ export function productList(state = { isLoadingData: true, data: [], error: null
                     isLoadingData: true
                 };
             }
+            break;
         case API_END:
             if (action.payload === FETCH_PRODUCT_LIST_REQUEST) {
                 return {
@@ -23,6 +24,7 @@ export function productList(state = { isLoadingData: true, data: [], error: null
                     isLoadingData: false
                 }
             }
+            break;
         case FETCH_PRODUCT_LIST_SUCCESS:
             return {
                 ...state,
