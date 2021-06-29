@@ -6,7 +6,7 @@ import scrollbarWidth from './scrollbarWidth'
 
 import formatData from './formatData'
 
-const defaultColWidth = 150
+const colWidth = 150
 const Styles = styled.div`
   padding: 1rem;
 
@@ -30,6 +30,13 @@ const Styles = styled.div`
         box-sizing: border-box;
     }
 
+    .td{
+        .cell-rt-align{
+            padding: 5px;
+            text-align: right;
+        }
+    }
+
     .th,
     .td {
       margin: 0;
@@ -48,9 +55,9 @@ function Table({ columns, data, defaultColumnWidth }) {
 
     const defaultColumn = React.useMemo(
         () => ({
-            width: defaultColumnWidth || defaultColWidth,
+            width: defaultColumnWidth || colWidth,
         }),
-        []
+        [defaultColumnWidth]
     )
 
     const scrollBarSize = React.useMemo(() => scrollbarWidth(), [])
@@ -85,7 +92,7 @@ function Table({ columns, data, defaultColumnWidth }) {
                     {row.cells.map((cell) => {
 
                         return (
-                            <div {...cell.getCellProps()} style={{ ...cell.getCellProps().style, width: (cell && cell.column && cell.column.width) || defaultColWidth }} className="td">
+                            <div {...cell.getCellProps()} style={{ ...cell.getCellProps().style, width: (cell && cell.column && cell.column.width) || colWidth }} className="td">
                                 {cell.render('Cell')}
                             </div>
                         )
@@ -133,16 +140,16 @@ function DataTable({ columns, rows, defaultColumnWidth }) {
                 Header: () => { return <div style={{ padding: 5 }}>{item.label}</div> },
                 Cell: ({ value }) => {
                     return !item.numeric ? <div style={{ padding: 5 }}>{value}</div>
-                        : <div style={{ padding: 5 }} className="cell-rt-align" >{value}</div>
+                        : <div className="cell-rt-align" >{value}</div>
                 },
-                width: item.width || defaultColumnWidth || defaultColWidth,
+                width: item.width || defaultColumnWidth || colWidth,
                 accessor: item.id
             }
         }) : [],
-        []
+        [columns, defaultColumnWidth]
     )
 
-    const rowData = React.useMemo(() => formatData(rows), [])
+    const rowData = React.useMemo(() => formatData(rows), [rows])
     console.log("columnData", columnData)
     return (
         <Styles>
