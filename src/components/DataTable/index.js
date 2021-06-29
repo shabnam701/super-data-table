@@ -43,6 +43,10 @@ const Styles = styled.div`
       border-bottom: 1px solid black;
       border-right: 1px solid black;
 
+      .cell-padding{
+          padding: 5px;
+      }
+
       :last-child {
         border-right: 1px solid black;
       }
@@ -134,13 +138,20 @@ function Table({ columns, data, defaultColumnWidth }) {
 
 function DataTable({ columns, rows, defaultColumnWidth }) {
     const columnData = React.useMemo(
-        () => columns && columns.length > 0 ? columns.map((item, index) => {
+        () => columns && columns.length > 0 ? columns.filter(item => !item.isHidden).map((item, index) => {
             return {
                 ...item,
-                Header: () => { return <div style={{ padding: 5 }}>{item.label}</div> },
+                Header: () => { return <div className="cell-padding">{item.label}</div> },
                 Cell: ({ value }) => {
-                    return !item.numeric ? <div style={{ padding: 5 }}>{value}</div>
-                        : <div className="cell-rt-align" >{value}</div>
+                    return item.numeric
+                        ? <div className="cell-rt-align" >{value}</div>
+                        : <div className="cell-padding">
+                            {item.isImage && typeof value === "string"
+                                ? <img width={25} src={value} />
+                                : item.isLink && typeof value === "string"
+                                    ? <a href={`${value}`} target="_blank">Open Link &#xbb;</a>
+                                    : value
+                            }</div>
                 },
                 width: item.width || defaultColumnWidth || colWidth,
                 accessor: item.id
