@@ -6,6 +6,7 @@ import scrollbarWidth from './scrollbarWidth'
 
 import formatData from './formatData'
 
+const defaultColWidth = 150
 const Styles = styled.div`
   padding: 1rem;
 
@@ -13,6 +14,8 @@ const Styles = styled.div`
     display: inline-block;
     border-spacing: 0;
     border: 1px solid black;
+    word-break: break-word;
+    width: 100%;
 
     .tr {
       :last-child {
@@ -22,10 +25,14 @@ const Styles = styled.div`
       }
     }
 
+    .th{
+        display: inline-block;
+        box-sizing: border-box;
+    }
+
     .th,
     .td {
       margin: 0;
-      padding: 0.5rem;
       border-bottom: 1px solid black;
       border-right: 1px solid black;
 
@@ -36,18 +43,17 @@ const Styles = styled.div`
   }
 `
 
-function Table({ columns, data }) {
+function Table({ columns, data, defaultColumnWidth }) {
     // Use the state and functions returned from useTable to build your UI
 
     const defaultColumn = React.useMemo(
         () => ({
-            width: 150,
+            width: defaultColumnWidth || defaultColWidth,
         }),
         []
     )
 
     const scrollBarSize = React.useMemo(() => scrollbarWidth(), [])
-
     const {
         getTableProps,
         getTableBodyProps,
@@ -68,6 +74,7 @@ function Table({ columns, data }) {
         ({ index, style }) => {
             const row = rows[index]
             prepareRow(row)
+
             return (
                 <div
                     {...row.getRowProps({
@@ -75,9 +82,10 @@ function Table({ columns, data }) {
                     })}
                     className="tr"
                 >
-                    {row.cells.map(cell => {
+                    {row.cells.map((cell) => {
+
                         return (
-                            <div {...cell.getCellProps()} className="td">
+                            <div {...cell.getCellProps()} style={{ ...cell.getCellProps().style, width: (cell && cell.column && cell.column.width) || defaultColWidth }} className="td">
                                 {cell.render('Cell')}
                             </div>
                         )
@@ -93,9 +101,9 @@ function Table({ columns, data }) {
         <div {...getTableProps()} className="table">
             <div>
                 {headerGroups.map(headerGroup => (
-                    <div {...headerGroup.getHeaderGroupProps()} className="tr">
+                    <div {...headerGroup.getHeaderGroupProps()} style={{ ...headerGroup.getHeaderGroupProps().style, marginRight: scrollBarSize }} className="tr">
                         {headerGroup.headers.map(column => (
-                            <div {...column.getHeaderProps()} className="th">
+                            <div {...column.getHeaderProps()} style={{ ...column.getHeaderProps.style, width: column.width }} className="th">
                                 {column.render('Header')}
                             </div>
                         ))}
@@ -117,27 +125,28 @@ function Table({ columns, data }) {
     )
 }
 
-function DataTable({ columns, rows }) {
+function DataTable({ columns, rows, defaultColumnWidth }) {
     const columnData = React.useMemo(
-        () => columns.map((item, index) => {
+        () => columns && columns.length > 0 ? columns.map((item, index) => {
             return {
                 ...item,
-                Header: item.label,
+                Header: () => { return <div style={{ padding: 5 }}>{item.label}</div> },
                 Cell: ({ value }) => {
-                    return !item.numeric ? value
-                        : <div className="cell-rt-align">{value}</div>
+                    return !item.numeric ? <div style={{ padding: 5 }}>{value}</div>
+                        : <div style={{ padding: 5 }} className="cell-rt-align" >{value}</div>
                 },
+                width: item.width || defaultColumnWidth || defaultColWidth,
                 accessor: item.id
             }
-        }),
+        }) : [],
         []
     )
 
     const rowData = React.useMemo(() => formatData(rows), [])
-
+    console.log("columnData", columnData)
     return (
         <Styles>
-            <Table columns={columnData} data={rowData} />
+            <Table columns={columnData} data={rowData} defaultColumnWidth={defaultColumnWidth} />
         </Styles>
     )
 }

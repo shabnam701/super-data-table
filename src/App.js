@@ -23,7 +23,7 @@ class App extends Component {
         ) : this.props.error ? (
           <div>Failed {this.props.error && this.props.error.message}</div>
         ) : this.props.data && this.props.data.length > 0 ? (
-          <DataTable columns={columns} rows={this.props.data} />
+          <DataTable columns={columns} rows={this.props.data} defaultColumnWidth={300} />
         ) : <div />}
 
       </div>
