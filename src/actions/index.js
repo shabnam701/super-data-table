@@ -7,7 +7,7 @@ import {
 
 export function fetchProductList() {
   return apiAction({
-    url: 'https://jsonplaceholder.typicode.com/photos',
+    url: 'https://jsonplaceholder.typicode.com/photos', //REST API Endpoint to consume data
     onSuccess: setProductListData,
     onFailure: setProductListError,
     label: FETCH_PRODUCT_LIST_REQUEST,
@@ -33,8 +33,8 @@ function apiAction({
   method = 'GET',
   data = null,
   accessToken = null,
-  onSuccess = () => {},
-  onFailure = () => {},
+  onSuccess = () => { },
+  onFailure = () => { },
   label = '',
   headersOverride = null,
 }) {
