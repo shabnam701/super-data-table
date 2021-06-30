@@ -1,14 +1,14 @@
-import React from 'react'
-import styled from 'styled-components'
-import Table from './ReactTable'
-import formatData from './formatData'
+import React from 'react';
+import styled from 'styled-components';
+import Table from './ReactTable';
+import formatData from './formatData';
 
 const Styles = styled.div`
   padding: 1rem;
-  
-  .table-striped{ 
+
+  .table-striped {
     .tbody .tr-striped {
-        background-color: rgba(0,0,0,.03);
+      background-color: rgba(0, 0, 0, 0.03);
     }
   }
 
@@ -27,22 +27,22 @@ const Styles = styled.div`
       }
     }
 
-    .th{
-        display: flex;
-        box-sizing: border-box;
-        font-weight:bold;
-        justify-content: center;
-        align-items: center;
+    .th {
+      display: flex;
+      box-sizing: border-box;
+      font-weight: bold;
+      justify-content: center;
+      align-items: center;
     }
 
-    .td{
-        .cell-rt-align{
-            padding: 5px;
-            text-align: right;
-        }
-        .mr-t-10{
-            margin-top:10px;
-        }
+    .td {
+      .cell-rt-align {
+        padding: 5px;
+        text-align: right;
+      }
+      .mr-t-10 {
+        margin-top: 10px;
+      }
     }
 
     .th,
@@ -51,8 +51,8 @@ const Styles = styled.div`
       border-bottom: 1px solid #ddd;
       border-right: 1px solid #ddd;
 
-      .cell-padding{
-          padding: 5px;
+      .cell-padding {
+        padding: 5px;
       }
 
       :last-child {
@@ -60,50 +60,65 @@ const Styles = styled.div`
       }
     }
   }
-`
+`;
 
-function DataTable({ columns,
-    rows,
-    defaultColumnWidth,
-    onSelectionChange,
-    onRowClick,
-    globalSearch
+function DataTable({
+  columns,
+  rows,
+  defaultColumnWidth,
+  onSelectionChange,
+  onRowClick,
+  globalSearch,
 }) {
-    const columnData = React.useMemo(
-        () => columns && columns.length > 0 ? columns.filter(item => !item.isHidden).map((item, index) => {
-            return {
+  const columnData = React.useMemo(
+    () =>
+      columns && columns.length > 0
+        ? columns
+            .filter((item) => !item.isHidden)
+            .map((item, index) => {
+              return {
                 ...item,
-                Header: () => { return <div className="cell-padding">{item.label}</div> },
+                Header: () => {
+                  return <div className="cell-padding">{item.label}</div>;
+                },
                 Cell: ({ value }) => {
-                    return item.numeric
-                        ? <div className="cell-rt-align" >{value}</div>
-                        : <div className="cell-padding">
-                            {item.isImage && typeof value === "string"
-                                ? <img width={25} src={value} />
-                                : item.isLink && typeof value === "string"
-                                    ? <a href={`${value}`} target="_blank">Open Link &#xbb;</a>
-                                    : value
-                            }</div>
+                  return item.numeric ? (
+                    <div className="cell-rt-align">{value}</div>
+                  ) : (
+                    <div className="cell-padding">
+                      {item.isImage && typeof value === 'string' ? (
+                        <img width={25} src={value} />
+                      ) : item.isLink && typeof value === 'string' ? (
+                        <a href={`${value}`} target="_blank">
+                          Open Link &#xbb;
+                        </a>
+                      ) : (
+                        value
+                      )}
+                    </div>
+                  );
                 },
                 width: item.width || defaultColumnWidth,
-                accessor: item.id
-            }
-        }) : [],
-        [columns, defaultColumnWidth]
-    )
+                accessor: item.id,
+              };
+            })
+        : [],
+    [columns, defaultColumnWidth],
+  );
 
-    const rowData = React.useMemo(() => formatData(rows), [rows])
-    return (
-        <Styles>
-            <Table
-                columns={columnData}
-                data={rowData}
-                defaultColumnWidth={defaultColumnWidth}
-                onSelectionChange={onSelectionChange}
-                onRowClick={onRowClick}
-                globalSearch={globalSearch} />
-        </Styles>
-    )
+  const rowData = React.useMemo(() => formatData(rows), [rows]);
+  return (
+    <Styles>
+      <Table
+        columns={columnData}
+        data={rowData}
+        defaultColumnWidth={defaultColumnWidth}
+        onSelectionChange={onSelectionChange}
+        onRowClick={onRowClick}
+        globalSearch={globalSearch}
+      />
+    </Styles>
+  );
 }
 
-export default DataTable
+export default DataTable;

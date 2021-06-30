@@ -1,20 +1,19 @@
-import { Component } from "react";
-import { connect } from "react-redux";
+import { Component } from 'react';
+import { connect } from 'react-redux';
 import { fetchProductList } from './actions';
 import DataTable from './components/DataTable';
 import columns from './data/columns';
-import Alerts from './components/Alerts'
+import Alerts from './components/Alerts';
 import './App.css';
-
 
 class App extends Component {
   constructor(props) {
-    super(props)
+    super(props);
     this.state = {
       selectedRows: [],
       lastRowClickedData: null,
       lastRowClickedIndex: null,
-    }
+    };
     this.onSelectionChange = this.onSelectionChange.bind(this);
     this.onRowClick = this.onRowClick.bind(this);
   }
@@ -25,20 +24,22 @@ class App extends Component {
   }
 
   onSelectionChange = (selectedRows = []) => {
-    console.log("selectedRows", selectedRows)
-    this.setState({ selectedRows: selectedRows })
-  }
+    console.log('selectedRows', selectedRows);
+    this.setState({ selectedRows: selectedRows });
+  };
 
   onRowClick = (rowData = null, rowIndex = null) => {
-    console.log("onRowClick", rowData)
-    this.setState({ lastRowClickedData: rowData, lastRowClickedIndex: rowIndex })
-  }
+    console.log('onRowClick', rowData);
+    this.setState({ lastRowClickedData: rowData, lastRowClickedIndex: rowIndex });
+  };
 
   render() {
     return (
       <div className="App">
         <header className="App-header">
-          <h4 className="App-logo">ACME <i>Inc.</i></h4>
+          <h4 className="App-logo">
+            ACME <i>Inc.</i>
+          </h4>
         </header>
         <Alerts
           selectedRows={this.state.selectedRows}
@@ -58,8 +59,9 @@ class App extends Component {
             onRowClick={this.onRowClick} //trigger when a row is clicked, return row data and index
             globalSearch={true} //enable search on the entire data
           />
-        ) : <div />}
-
+        ) : (
+          <div />
+        )}
       </div>
     );
   }
@@ -68,12 +70,9 @@ class App extends Component {
 const mapStateToProps = ({ productList: { data = [], isLoadingData = false, error = null } }) => ({
   data,
   isLoadingData,
-  error
+  error,
 });
 
-export default connect(
-  mapStateToProps,
-  {
-    fetchProductList
-  }
-)(App);
+export default connect(mapStateToProps, {
+  fetchProductList,
+})(App);
