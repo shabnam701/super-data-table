@@ -70,6 +70,8 @@ function DataTable({
   onRowClick,
   globalSearch,
 }) {
+
+  // use memoized hook to create columns data for react-table component to avoid memory leaks
   const columnData = React.useMemo(
     () =>
       columns && columns.length > 0
@@ -82,9 +84,11 @@ function DataTable({
                 return <div className="cell-padding">{item.label}</div>;
               },
               Cell: ({ value }) => {
+                // cell wrappers for numeric, isImagem isLink type fields
                 return item.numeric ? (
                   <div className="cell-rt-align">{value}</div>
-                ) : (
+                ) :
+                  (
                     <div className="cell-padding">
                       {item.isImage && typeof value === 'string' ? (
                         <img width={25} src={value} alt="thumbnail" />
@@ -106,6 +110,7 @@ function DataTable({
     [columns, defaultColumnWidth],
   );
 
+  // use memoized hook to create rows data for react-table component to avoid memory leaks
   const rowData = React.useMemo(() => formatData(rows), [rows]);
   return (
     <Styles>

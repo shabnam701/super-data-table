@@ -10,8 +10,10 @@ import {
 import { FixedSizeList } from 'react-window';
 import scrollbarWidth from './scrollbarWidth';
 
+// width of column if not specified in data
 const colWidth = 150;
 
+// Component to render row selection checkboxes
 const IndeterminateCheckbox = React.forwardRef(({ indeterminate, ...rest }, ref) => {
     const defaultRef = React.useRef();
     const resolvedRef = ref || defaultRef;
@@ -26,6 +28,8 @@ const IndeterminateCheckbox = React.forwardRef(({ indeterminate, ...rest }, ref)
     );
 });
 
+
+// component to search within table data globally
 function GlobalFilter({ preGlobalFilteredRows, globalFilter, setGlobalFilter }) {
     const count = preGlobalFilteredRows.length;
     const [value, setValue] = React.useState(globalFilter);
@@ -52,6 +56,7 @@ function GlobalFilter({ preGlobalFilteredRows, globalFilter, setGlobalFilter }) 
     );
 }
 
+// Main table component to be rendered
 export default function Table({
     columns,
     data,
@@ -60,16 +65,19 @@ export default function Table({
     onRowClick,
     globalSearch,
 }) {
-    // Use the state and functions returned from useTable to build your UI
 
+    // Use the state and functions returned from useTable to build UI
     const defaultColumn = React.useMemo(
         () => ({
-            width: defaultColumnWidth || colWidth,
+            width: defaultColumnWidth || colWidth, // Set width of column
         }),
         [defaultColumnWidth],
     );
 
+    //If table overflows, get scrollbarsize to set height and width of table and rows
     const scrollBarSize = React.useMemo(() => scrollbarWidth(), []);
+
+    //root hook for React Table
     const {
         getTableProps,
         getTableBodyProps,
@@ -93,33 +101,27 @@ export default function Table({
                     onSelectionChange(selected);
                 }
                 return newState;
-            },
+            }, // to trigger onSelectionChange when selectedRowIds change in state
         },
-        useGlobalFilter,
-        useSortBy,
-        useRowSelect,
+        useGlobalFilter, // hook that implements global row filtering
+        useSortBy, // hook that implements row sorting
+        useRowSelect, // hook that implements basic row selection
         (hooks) => {
             hooks.visibleColumns.push((columns) => [
-                // Let's make a column for selection
+                // Column for enabling user to select rows using checkboxes
                 {
                     id: 'selection',
-                    // The header can use the table's getToggleAllRowsSelectedProps method
-                    // to render a checkbox
                     Header: ({ getToggleAllRowsSelectedProps }) => (
                         <div>
                             <IndeterminateCheckbox
-                                onSelectionChange={onSelectionChange}
                                 {...getToggleAllRowsSelectedProps()}
                             />
                         </div>
                     ),
                     width: 100,
-                    // The cell can use the individual row's getToggleRowSelectedProps method
-                    // to the render a checkbox
                     Cell: ({ row }) => (
                         <div>
                             <IndeterminateCheckbox
-                                onSelectionChange={onSelectionChange}
                                 {...row.getToggleRowSelectedProps()}
                             />
                         </div>
@@ -128,9 +130,10 @@ export default function Table({
                 ...columns,
             ]);
         },
-        useBlockLayout,
+        useBlockLayout, // plugin hook that adds support for headers and cells to be rendered as inline-block 
         );
 
+    // hook to render rows
     const RenderRow = React.useCallback(
         ({ index, style }) => {
             const row = rows[index];
@@ -141,6 +144,7 @@ export default function Table({
                         style,
                     })}
                     onClick={() => {
+                        // trigger row click callback function
                         onRowClick(row.values, index);
                     }}
                     className={`${index % 2 === 0 ? 'tr tr-striped' : 'tr'}`}
@@ -169,6 +173,8 @@ export default function Table({
     return (
         <div {...getTableProps()} className="table table-striped">
             <div className="thead">
+                {/* Render global search only when globalSearch={true} in the API.
+                First row in table */}
                 {globalSearch && (
                     <div style={{ marginRight: scrollBarSize }} className="tr">
                         <div className="th" style={{ height: '50px', justifyContent: 'flex-end' }}>
@@ -180,12 +186,15 @@ export default function Table({
                         </div>
                     </div>
                 )}
+                {/* Render column header for the table.
+                Use divs instead of table tags for better performance in rendering on DOM */}
                 {headerGroups.map((headerGroup) => (
                     <div
                         {...headerGroup.getHeaderGroupProps()}
                         style={{ ...headerGroup.getHeaderGroupProps().style, marginRight: scrollBarSize }}
                         className="tr"
                     >
+                        {/* Add sort functionality to columns where sortable={true} */}
                         {headerGroup.headers.map((column) =>
                             column.sortable ? (
                                 <div
@@ -212,6 +221,8 @@ export default function Table({
                 ))}
             </div>
 
+            {/* FixedSizeList from react-window to render rows only within viewable scroll area.
+            This helps in handling large data and enhances performance*/}
             <div {...getTableBodyProps()} className="tbody">
                 <FixedSizeList
                     height={350}

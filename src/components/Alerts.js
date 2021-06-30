@@ -1,5 +1,6 @@
 import React from 'react';
 
+// Display alert box when action is triggered from table
 export default function Alerts({ selectedRows, lastRowClickedData, lastRowClickedIndex }) {
   return (
     <div className="alerts">
