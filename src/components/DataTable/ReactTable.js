@@ -1,5 +1,12 @@
 import React from 'react'
-import { useTable, useRowSelect, useBlockLayout, useSortBy } from 'react-table'
+import {
+    useTable,
+    useRowSelect,
+    useBlockLayout,
+    useSortBy,
+    useGlobalFilter,
+    useAsyncDebounce
+} from 'react-table'
 import { FixedSizeList } from 'react-window'
 import scrollbarWidth from './scrollbarWidth'
 
@@ -22,8 +29,44 @@ const IndeterminateCheckbox = React.forwardRef(
         )
     }
 )
+function GlobalFilter({
+    preGlobalFilteredRows,
+    globalFilter,
+    setGlobalFilter,
+}) {
+    const count = preGlobalFilteredRows.length
+    const [value, setValue] = React.useState(globalFilter)
+    const onChange = useAsyncDebounce(value => {
+        setGlobalFilter(value || undefined)
+    }, 200)
 
-export default function Table({ columns, data, defaultColumnWidth, onSelectionChange, onRowClick }) {
+    return (
+        <span>
+            Search:{' '}
+            <input
+                value={value || ""}
+                onChange={e => {
+                    setValue(e.target.value);
+                    onChange(e.target.value);
+                }}
+                placeholder={`${count} records...`}
+                style={{
+                    fontSize: '1.1rem',
+                    border: '0',
+                }}
+            />
+        </span>
+    )
+}
+
+
+export default function Table({
+    columns,
+    data,
+    defaultColumnWidth,
+    onSelectionChange,
+    onRowClick,
+    globalSearch }) {
     // Use the state and functions returned from useTable to build your UI
 
     const defaultColumn = React.useMemo(
@@ -41,7 +84,10 @@ export default function Table({ columns, data, defaultColumnWidth, onSelectionCh
         rows,
         totalColumnsWidth,
         prepareRow,
-        state: { selectedRowIds },
+        state: { selectedRowIds, globalFilter },
+        visibleColumns,
+        preGlobalFilteredRows,
+        setGlobalFilter,
     } = useTable(
         {
             columns,
@@ -57,6 +103,7 @@ export default function Table({ columns, data, defaultColumnWidth, onSelectionCh
                 return newState
             }
         },
+        useGlobalFilter,
         useSortBy,
         useRowSelect,
         hooks => {
@@ -119,6 +166,15 @@ export default function Table({ columns, data, defaultColumnWidth, onSelectionCh
     return (
         <div {...getTableProps()} className="table table-striped">
             <div className="thead">
+                {globalSearch && <div style={{ marginRight: scrollBarSize }} className="tr">
+                    <div className="th" style={{ height: "50px", justifyContent: "flex-end" }}>
+                        <GlobalFilter
+                            preGlobalFilteredRows={preGlobalFilteredRows}
+                            globalFilter={globalFilter}
+                            setGlobalFilter={setGlobalFilter}
+                        />
+                    </div>
+                </div>}
                 {headerGroups.map(headerGroup => (
                     <div {...headerGroup.getHeaderGroupProps()} style={{ ...headerGroup.getHeaderGroupProps().style, marginRight: scrollBarSize }} className="tr">
                         {headerGroup.headers.map(column => (
@@ -142,7 +198,7 @@ export default function Table({ columns, data, defaultColumnWidth, onSelectionCh
 
             <div {...getTableBodyProps()} className="tbody">
                 <FixedSizeList
-                    height={500}
+                    height={350}
                     itemCount={rows.length}
                     itemSize={35}
                     width={totalColumnsWidth + scrollBarSize}

@@ -62,7 +62,13 @@ const Styles = styled.div`
   }
 `
 
-function DataTable({ columns, rows, defaultColumnWidth, onSelectionChange, onRowClick }) {
+function DataTable({ columns,
+    rows,
+    defaultColumnWidth,
+    onSelectionChange,
+    onRowClick,
+    globalSearch
+}) {
     const columnData = React.useMemo(
         () => columns && columns.length > 0 ? columns.filter(item => !item.isHidden).map((item, index) => {
             return {
@@ -94,7 +100,8 @@ function DataTable({ columns, rows, defaultColumnWidth, onSelectionChange, onRow
                 data={rowData}
                 defaultColumnWidth={defaultColumnWidth}
                 onSelectionChange={onSelectionChange}
-                onRowClick={onRowClick} />
+                onRowClick={onRowClick}
+                globalSearch={globalSearch} />
         </Styles>
     )
 }

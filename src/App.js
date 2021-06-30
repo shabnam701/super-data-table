@@ -1,9 +1,11 @@
 import { Component } from "react";
 import { connect } from "react-redux";
-import { fetchProductList } from './actions'
-import DataTable from './components/DataTable'
-import columns from './data/columns'
+import { fetchProductList } from './actions';
+import DataTable from './components/DataTable';
+import columns from './data/columns';
+import Alerts from './components/Alerts'
 import './App.css';
+
 
 class App extends Component {
   constructor(props) {
@@ -38,33 +40,24 @@ class App extends Component {
         <header className="App-header">
           <h4 className="App-logo">ACME <i>Inc.</i></h4>
         </header>
-        <div className="alerts">
-          {this.state.selectedRows && this.state.selectedRows.length > 0 &&
-            <div clasName="alert alert-info">
-              <h5 className="alert-title">Selected Rows: <span className="alert-title-data">{JSON.stringify(this.state.selectedRows)}</span></h5>
-            </div>}
-          {this.state.lastRowClickedData &&
-            <div clasName="alert alert-info">
-              <h5 className="alert-title">Last clicked Row: <span className="alert-title-data">{this.state.lastRowClickedIndex} </span></h5>
-              <p className="alert-note"><i>NOTE: Indexing of rows starts from 0</i></p>
-              <pre className="clickedObject">
-                <code>
-                  {JSON.stringify(this.state.lastRowClickedData, null, 2)}
-                </code>
-              </pre>
-            </div>}
-        </div>
+        <Alerts
+          selectedRows={this.state.selectedRows}
+          lastRowClickedData={this.state.lastRowClickedData}
+          lastRowClickedIndex={this.state.lastRowClickedIndex}
+        />
         {this.props.isLoadingData ? (
           <div>Loading . . .</div>
         ) : this.props.error ? (
           <div>Failed {this.props.error && this.props.error.message}</div>
         ) : this.props.data && this.props.data.length > 0 ? (
           <DataTable
-            columns={columns}
-            rows={this.props.data}
-            defaultColumnWidth={300}
-            onSelectionChange={this.onSelectionChange}
-            onRowClick={this.onRowClick} />
+            columns={columns} // column headers for table
+            rows={this.props.data} // data rows for table
+            defaultColumnWidth={300} //set default column width if width not specified
+            onSelectionChange={this.onSelectionChange} // trigger when row selection changed using left chckboxes
+            onRowClick={this.onRowClick} //trigger when a row is clicked, return row data and index
+            globalSearch={true} //enable search on the entire data
+          />
         ) : <div />}
 
       </div>
