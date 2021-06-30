@@ -1,59 +1,26 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import {
     useTable,
     useRowSelect,
     useBlockLayout,
     useSortBy,
     useGlobalFilter,
-    useAsyncDebounce,
 } from 'react-table';
 import { FixedSizeList } from 'react-window';
 import scrollbarWidth from './scrollbarWidth';
+import GlobalFilter from './GlobalFilter';
 
 // width of column if not specified in data
 const colWidth = 150;
 
-// Component to render row selection checkboxes
-const IndeterminateCheckbox = React.forwardRef(({ indeterminate, ...rest }, ref) => {
-    const defaultRef = React.useRef();
-    const resolvedRef = ref || defaultRef;
-    React.useEffect(() => {
-        resolvedRef.current.indeterminate = indeterminate;
-    }, [resolvedRef, indeterminate]);
-
-    return (
-        <>
-            <input className="mr-t-10" type="checkbox" ref={resolvedRef} {...rest} />
-        </>
-    );
-});
-
-
-// component to search within table data globally
-function GlobalFilter({ preGlobalFilteredRows, globalFilter, setGlobalFilter }) {
-    const count = preGlobalFilteredRows.length;
-    const [value, setValue] = React.useState(globalFilter);
-    const onChange = useAsyncDebounce((value) => {
-        setGlobalFilter(value || undefined);
-    }, 200);
-
-    return (
-        <span>
-            Search:{' '}
-            <input
-                value={value || ''}
-                onChange={(e) => {
-                    setValue(e.target.value);
-                    onChange(e.target.value);
-                }}
-                placeholder={`${count} records...`}
-                style={{
-                    fontSize: '1.1rem',
-                    border: '0',
-                }}
-            />
-        </span>
-    );
+Table.propTypes = {
+    columns: PropTypes.array,
+    data: PropTypes.array,
+    defaultColumnWidth: PropTypes.number,
+    onSelectionChange: PropTypes.func,
+    onRowClick: PropTypes.func,
+    globalSearch: PropTypes.bool,
 }
 
 // Main table component to be rendered
@@ -61,8 +28,8 @@ export default function Table({
     columns,
     data,
     defaultColumnWidth,
-    onSelectionChange,
-    onRowClick,
+    onSelectionChange = () => { },
+    onRowClick = () => { },
     globalSearch,
 }) {
 
@@ -88,52 +55,27 @@ export default function Table({
         state: { selectedRowIds, globalFilter },
         preGlobalFilteredRows,
         setGlobalFilter,
-    } = useTable(
-        {
-            columns,
-            data,
-            defaultColumn,
-            stateReducer: (newState, action, prevState) => {
-                if (newState.selectedRowIds !== prevState.selectedRowIds) {
-                    //If all columns are selected return 'All' to onSelectionChange else return array of ids
-                    const selectedIds = Object.keys(newState.selectedRowIds);
-                    const selected = selectedIds.length === data.length ? 'All' : selectedIds;
-                    onSelectionChange(selected);
-                }
-                return newState;
-            }, // to trigger onSelectionChange when selectedRowIds change in state
-        },
+    } = useTable({
+        columns,
+        data,
+        defaultColumn,
+    },
         useGlobalFilter, // hook that implements global row filtering
         useSortBy, // hook that implements row sorting
         useRowSelect, // hook that implements basic row selection
-        (hooks) => {
-            hooks.visibleColumns.push((columns) => [
-                // Column for enabling user to select rows using checkboxes
-                {
-                    id: 'selection',
-                    Header: ({ getToggleAllRowsSelectedProps }) => (
-                        <div>
-                            <IndeterminateCheckbox
-                                {...getToggleAllRowsSelectedProps()}
-                            />
-                        </div>
-                    ),
-                    width: 100,
-                    Cell: ({ row }) => (
-                        <div>
-                            <IndeterminateCheckbox
-                                {...row.getToggleRowSelectedProps()}
-                            />
-                        </div>
-                    ),
-                },
-                ...columns,
-            ]);
-        },
-        useBlockLayout, // plugin hook that adds support for headers and cells to be rendered as inline-block 
-        );
+        useBlockLayout // plugin hook that adds support for headers and cells to be rendered as inline-block 
+    );
 
-    // hook to render rows
+    // Effect hook to trigger onSelectionChange when selectedRowIds change in state
+    React.useEffect(() => {
+        const selectedIds = Object.keys(selectedRowIds);
+        const selected = selectedIds.length === data.length ? 'All' : selectedIds;
+        console.log("onSelectionChange", onSelectionChange)
+        onSelectionChange(selected);
+    }, [onSelectionChange, selectedRowIds])
+
+
+    // hook to render a row
     const RenderRow = React.useCallback(
         ({ index, style }) => {
             const row = rows[index];
@@ -166,10 +108,11 @@ export default function Table({
                 </div>
             );
         },
-        [prepareRow, rows, selectedRowIds, onRowClick],
+        [prepareRow, rows, selectedRowIds, onRowClick]
     );
 
     // Render the UI for your table
+    // Use divs instead of table tags for better performance in rendering on DOM
     return (
         <div {...getTableProps()} className="table table-striped">
             <div className="thead">
@@ -186,8 +129,7 @@ export default function Table({
                         </div>
                     </div>
                 )}
-                {/* Render column header for the table.
-                Use divs instead of table tags for better performance in rendering on DOM */}
+                {/* Render column header for the table. */}
                 {headerGroups.map((headerGroup) => (
                     <div
                         {...headerGroup.getHeaderGroupProps()}
@@ -203,7 +145,7 @@ export default function Table({
                                     className="th"
                                 >
                                     {column.render('Header')}
-                                    <span style={{ color: '#22a7d0' }}>
+                                    <span className="action-icon">
                                         {column.isSorted ? (column.isSortedDesc ? '▼' : '▲') : '⇅'}
                                     </span>
                                 </div>

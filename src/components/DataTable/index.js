@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import Table from './ReactTable';
 import formatData from './formatData';
+import RowSelector from './RowSelector'
 
 const Styles = styled.div`
   padding: 1rem;
@@ -33,6 +34,11 @@ const Styles = styled.div`
       font-weight: bold;
       justify-content: center;
       align-items: center;
+
+      .action-icon{
+        color: rgb(34, 167, 208);
+        cursor: pointer;
+      }
     }
 
     .td {
@@ -62,6 +68,7 @@ const Styles = styled.div`
   }
 `;
 
+
 function DataTable({
   columns,
   rows,
@@ -75,8 +82,25 @@ function DataTable({
   const columnData = React.useMemo(
     () =>
       columns && columns.length > 0
-        ? columns
-          .filter((item) => !item.isHidden)
+        ? [{// Column for enabling user to select rows using checkboxes
+          id: 'selection',
+          Header: ({ getToggleAllRowsSelectedProps }) => (
+            <div>
+              <RowSelector
+                {...getToggleAllRowsSelectedProps()}
+              />
+            </div>
+          ),
+          width: 100,
+          Cell: ({ row }) => (
+            <div>
+              <RowSelector
+                {...row.getToggleRowSelectedProps()}
+              />
+            </div>
+          ),
+        },
+        ...columns.filter((item) => !item.isHidden)
           .map((item) => {
             return {
               ...item,
@@ -106,6 +130,7 @@ function DataTable({
               accessor: item.id,
             };
           })
+        ]
         : [],
     [columns, defaultColumnWidth],
   );
