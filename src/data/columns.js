@@ -2,7 +2,8 @@ const columns = [{
     id: "id",
     label: "ID",
     numeric: true,
-    width: "100px"
+    width: "100px",
+    sortable: true // sort action on column
 }, {
     id: "thumbnailUrl",
     label: "Thumbnail",
@@ -11,7 +12,8 @@ const columns = [{
     id: "title",
     label: "Title",
     numeric: false,
-    width: "100%"
+    width: "100%",
+    sortable: true
 }, {
     id: "albumId", //Unique Id
     label: "Album ID", //Use in Header

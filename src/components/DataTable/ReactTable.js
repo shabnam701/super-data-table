@@ -1,5 +1,5 @@
 import React from 'react'
-import { useTable, useRowSelect, useBlockLayout } from 'react-table'
+import { useTable, useRowSelect, useBlockLayout, useSortBy } from 'react-table'
 import { FixedSizeList } from 'react-window'
 import scrollbarWidth from './scrollbarWidth'
 
@@ -57,6 +57,7 @@ export default function Table({ columns, data, defaultColumnWidth, onSelectionCh
                 return newState
             }
         },
+        useSortBy,
         useRowSelect,
         hooks => {
             hooks.visibleColumns.push(columns => [
@@ -121,9 +122,19 @@ export default function Table({ columns, data, defaultColumnWidth, onSelectionCh
                 {headerGroups.map(headerGroup => (
                     <div {...headerGroup.getHeaderGroupProps()} style={{ ...headerGroup.getHeaderGroupProps().style, marginRight: scrollBarSize }} className="tr">
                         {headerGroup.headers.map(column => (
-                            <div {...column.getHeaderProps()} style={{ ...column.getHeaderProps.style, width: column.width }} className="th">
-                                {column.render('Header')}
-                            </div>
+                            column.sortable
+                                ? <div {...column.getHeaderProps(column.getSortByToggleProps())}
+                                    style={{ ...column.getHeaderProps.style, width: column.width }} className="th">
+                                    {column.render('Header')}
+                                    <span style={{ color: "#22a7d0" }}>
+                                        {column.isSorted ? (column.isSortedDesc ? '▼' : '▲') : '⇅'}
+                                    </span>
+                                </div>
+                                :
+                                <div {...column.getHeaderProps()}
+                                    style={{ ...column.getHeaderProps.style, width: column.width }} className="th">
+                                    {column.render('Header')}
+                                </div>
                         ))}
                     </div>
                 ))}

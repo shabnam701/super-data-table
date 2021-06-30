@@ -28,9 +28,11 @@ const Styles = styled.div`
     }
 
     .th{
-        display: inline-block;
+        display: flex;
         box-sizing: border-box;
         font-weight:bold;
+        justify-content: center;
+        align-items: center;
     }
 
     .td{
