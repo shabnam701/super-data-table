@@ -6,21 +6,26 @@ export default class AppErrorBoundary extends React.Component {
         this.state = { hasError: false, error: null, errorInfo: null };
     }
 
-    static getDerivedStateFromError(error) {
+    static getDerivedStateFromError() {
         // Update state so the next render will show the fallback UI.
         return { hasError: true };
     }
 
-    componentDidCatch(error, errorInfo) {
+    componentDidCatch(errorInfo) {
         this.setState({ hasError: true, errorInfo: errorInfo })
     }
 
     render() {
-        if (this.state.hasError) {
+        const { hasError, errorInfo } = this.state
+        const { children } = this.props
+        if (hasError) {
             // You can render any custom fallback UI
-            return <h1 style={{ color: "tomato" }}>Failed to render data table. Please try again later.</h1>;
+            return <div>
+                <h5 style={{ color: "tomato" }}>Failed to render data table. Please try again later.</h5>
+                {errorInfo && <p>{JSON.stringify(errorInfo)}</p>}
+            </div>;
         }
 
-        return this.props.children;
+        return children;
     }
 }

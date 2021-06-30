@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { fetchProductList } from './actions';
 import DataTable from './components/DataTable';
@@ -6,6 +6,25 @@ import Alerts from './components/Alerts';
 import AppErrorBoundary from './components/AppErrorBoundary'
 import columns from './data/columns';
 import './App.css';
+
+function AppContent({ isLoadingData, error, data, onSelectionChange, onRowClick }) {
+  if (isLoadingData) {
+    return <div>Loading . . .</div>
+  } else if (error && error.message) {
+    return <div>Failed {error && error.message}</div>
+  } else if (data && data.length > 0) {
+    return <DataTable
+      columns={columns} // column headers for table
+      rows={data} // data rows for table
+      defaultColumnWidth={300} // set default column width if width not specified
+      onSelectionChange={onSelectionChange} // trigger when row selection changed using left chckboxes
+      onRowClick={onRowClick} // trigger when a row is clicked, return row data and index
+      globalSearch={true} // enable search on the entire data
+    />
+  } else {
+    return <div />
+  }
+}
 
 class App extends Component {
   constructor(props) {
@@ -20,8 +39,9 @@ class App extends Component {
   }
 
   componentDidMount() {
-    //On component mount call fetch request to load data
-    this.props.fetchProductList();
+    // On component mount call fetch request to load data
+    const { fetchProductList } = this.props;
+    fetchProductList();
   }
 
   onSelectionChange = (selectedRows = []) => {
@@ -35,6 +55,10 @@ class App extends Component {
   };
 
   render() {
+    const { selectedRows, lastRowClickedData, lastRowClickedIndex } = this.state
+    const { isLoadingData, error, data } = this.props
+
+
     return (
       <div className="App">
         <header className="App-header">
@@ -44,26 +68,17 @@ class App extends Component {
         </header>
         <AppErrorBoundary>
           <Alerts
-            selectedRows={this.state.selectedRows}
-            lastRowClickedData={this.state.lastRowClickedData}
-            lastRowClickedIndex={this.state.lastRowClickedIndex}
+            selectedRows={selectedRows}
+            lastRowClickedData={lastRowClickedData}
+            lastRowClickedIndex={lastRowClickedIndex}
           />
-          {this.props.isLoadingData ? (
-            <div>Loading . . .</div>
-          ) : this.props.error ? (
-            <div>Failed {this.props.error && this.props.error.message}</div>
-          ) : this.props.data && this.props.data.length > 0 ? (
-            <DataTable
-              columns={columns} // column headers for table
-              rows={this.props.data} // data rows for table
-              defaultColumnWidth={300} //set default column width if width not specified
-              onSelectionChange={this.onSelectionChange} // trigger when row selection changed using left chckboxes
-              onRowClick={this.onRowClick} //trigger when a row is clicked, return row data and index
-              globalSearch={true} //enable search on the entire data
-            />
-          ) : (
-                  <div />
-                )}
+          <AppContent
+            isLoadingData={isLoadingData}
+            error={error}
+            data={data}
+            onSelectionChange={this.onSelectionChange}
+            onRowClick={this.onRowClick}
+          />
         </AppErrorBoundary>
       </div>
     );

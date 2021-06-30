@@ -74,34 +74,34 @@ function DataTable({
     () =>
       columns && columns.length > 0
         ? columns
-            .filter((item) => !item.isHidden)
-            .map((item, index) => {
-              return {
-                ...item,
-                Header: () => {
-                  return <div className="cell-padding">{item.label}</div>;
-                },
-                Cell: ({ value }) => {
-                  return item.numeric ? (
-                    <div className="cell-rt-align">{value}</div>
-                  ) : (
+          .filter((item) => !item.isHidden)
+          .map((item) => {
+            return {
+              ...item,
+              Header: () => {
+                return <div className="cell-padding">{item.label}</div>;
+              },
+              Cell: ({ value }) => {
+                return item.numeric ? (
+                  <div className="cell-rt-align">{value}</div>
+                ) : (
                     <div className="cell-padding">
                       {item.isImage && typeof value === 'string' ? (
-                        <img width={25} src={value} />
+                        <img width={25} src={value} alt="thumbnail" />
                       ) : item.isLink && typeof value === 'string' ? (
-                        <a href={`${value}`} target="_blank">
+                        <a href={`${value}`} target="_blank" rel="noreferrer">
                           Open Link &#xbb;
                         </a>
                       ) : (
-                        value
-                      )}
+                            value
+                          )}
                     </div>
                   );
-                },
-                width: item.width || defaultColumnWidth,
-                accessor: item.id,
-              };
-            })
+              },
+              width: item.width || defaultColumnWidth,
+              accessor: item.id,
+            };
+          })
         : [],
     [columns, defaultColumnWidth],
   );
