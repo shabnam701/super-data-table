@@ -32,6 +32,8 @@
 .alert-title {
   margin: 0.5em 0em;
   color: #999;
+  max-height: 200px;
+  overflow: auto;
 }
 
 .alert-note {
@@ -40,4 +42,5 @@
 
 .alert-title-data {
   color: #333;
+  word-break: break-all;
 }
