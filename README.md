@@ -2,11 +2,9 @@
 
 A Data table component to handle large json data(>50k) converted to Table with infinite scroll
 
-Check [https://shabnam701.github.io/super-data-table/](demo here)
+Check [Demo Here](https://shabnam701.github.io/super-data-table/)
 
 
-
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
 
