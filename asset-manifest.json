@@ -1,8 +1,8 @@
 {
   "files": {
-    "main.css": "/super-data-table/static/css/main.3cf538f8.chunk.css",
-    "main.js": "/super-data-table/static/js/main.03a97812.chunk.js",
-    "main.js.map": "/super-data-table/static/js/main.03a97812.chunk.js.map",
+    "main.css": "/super-data-table/static/css/main.40ac6f9e.chunk.css",
+    "main.js": "/super-data-table/static/js/main.b270e97e.chunk.js",
+    "main.js.map": "/super-data-table/static/js/main.b270e97e.chunk.js.map",
     "runtime-main.js": "/super-data-table/static/js/runtime-main.7d5ba64d.js",
     "runtime-main.js.map": "/super-data-table/static/js/runtime-main.7d5ba64d.js.map",
     "static/js/2.b5462503.chunk.js": "/super-data-table/static/js/2.b5462503.chunk.js",
@@ -10,13 +10,13 @@
     "static/js/3.3d023820.chunk.js": "/super-data-table/static/js/3.3d023820.chunk.js",
     "static/js/3.3d023820.chunk.js.map": "/super-data-table/static/js/3.3d023820.chunk.js.map",
     "index.html": "/super-data-table/index.html",
-    "static/css/main.3cf538f8.chunk.css.map": "/super-data-table/static/css/main.3cf538f8.chunk.css.map",
+    "static/css/main.40ac6f9e.chunk.css.map": "/super-data-table/static/css/main.40ac6f9e.chunk.css.map",
     "static/js/2.b5462503.chunk.js.LICENSE.txt": "/super-data-table/static/js/2.b5462503.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
     "static/js/runtime-main.7d5ba64d.js",
     "static/js/2.b5462503.chunk.js",
-    "static/css/main.3cf538f8.chunk.css",
-    "static/js/main.03a97812.chunk.js"
+    "static/css/main.40ac6f9e.chunk.css",
+    "static/js/main.b270e97e.chunk.js"
   ]
 }
