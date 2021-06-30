@@ -9,21 +9,21 @@ const IndeterminateCheckbox = React.forwardRef(
     ({ indeterminate, ...rest }, ref) => {
         const defaultRef = React.useRef()
         const resolvedRef = ref || defaultRef
-        console.log("rest", rest)
-
         React.useEffect(() => {
             resolvedRef.current.indeterminate = indeterminate
         }, [resolvedRef, indeterminate])
 
         return (
             <>
-                <input type="checkbox" ref={resolvedRef} {...rest} />
+                <input className="mr-t-10" type="checkbox"
+                    ref={resolvedRef}
+                    {...rest} />
             </>
         )
     }
 )
 
-export default function Table({ columns, data, defaultColumnWidth }) {
+export default function Table({ columns, data, defaultColumnWidth, onSelectionChange, onRowClick }) {
     // Use the state and functions returned from useTable to build your UI
 
     const defaultColumn = React.useMemo(
@@ -47,6 +47,15 @@ export default function Table({ columns, data, defaultColumnWidth }) {
             columns,
             data,
             defaultColumn,
+            stateReducer: (newState, action, prevState) => {
+                if (newState.selectedRowIds !== prevState.selectedRowIds) {
+                    //If all columns are selected return 'All' to onSelectionChange else return array of ids
+                    let selectedIds = Object.keys(newState.selectedRowIds)
+                    let selected = selectedIds.length === data.length ? "All" : selectedIds
+                    onSelectionChange(selected)
+                }
+                return newState
+            }
         },
         useRowSelect,
         hooks => {
@@ -58,14 +67,16 @@ export default function Table({ columns, data, defaultColumnWidth }) {
                     // to render a checkbox
                     Header: ({ getToggleAllRowsSelectedProps }) => (
                         <div>
-                            <IndeterminateCheckbox {...getToggleAllRowsSelectedProps()} />
+                            <IndeterminateCheckbox onSelectionChange={onSelectionChange}
+                                {...getToggleAllRowsSelectedProps()} />
                         </div>
                     ),
+                    width: 100,
                     // The cell can use the individual row's getToggleRowSelectedProps method
                     // to the render a checkbox
                     Cell: ({ row }) => (
                         <div>
-                            <IndeterminateCheckbox {...row.getToggleRowSelectedProps()} />
+                            <IndeterminateCheckbox onSelectionChange={onSelectionChange} {...row.getToggleRowSelectedProps()} />
                         </div>
                     ),
                 },
@@ -79,13 +90,15 @@ export default function Table({ columns, data, defaultColumnWidth }) {
         ({ index, style }) => {
             const row = rows[index]
             prepareRow(row)
-
             return (
                 <div
                     {...row.getRowProps({
                         style,
                     })}
-                    className="tr"
+                    onClick={() => {
+                        onRowClick(row.values, index)
+                    }}
+                    className={`${index % 2 === 0 ? "tr tr-striped" : "tr"}`}
                 >
                     {row.cells.map((cell) => {
 
@@ -103,8 +116,8 @@ export default function Table({ columns, data, defaultColumnWidth }) {
 
     // Render the UI for your table
     return (
-        <div {...getTableProps()} className="table">
-            <div>
+        <div {...getTableProps()} className="table table-striped">
+            <div className="thead">
                 {headerGroups.map(headerGroup => (
                     <div {...headerGroup.getHeaderGroupProps()} style={{ ...headerGroup.getHeaderGroupProps().style, marginRight: scrollBarSize }} className="tr">
                         {headerGroup.headers.map(column => (
@@ -116,9 +129,9 @@ export default function Table({ columns, data, defaultColumnWidth }) {
                 ))}
             </div>
 
-            <div {...getTableBodyProps()}>
+            <div {...getTableBodyProps()} className="tbody">
                 <FixedSizeList
-                    height={400}
+                    height={500}
                     itemCount={rows.length}
                     itemSize={35}
                     width={totalColumnsWidth + scrollBarSize}

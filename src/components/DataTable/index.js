@@ -5,11 +5,17 @@ import formatData from './formatData'
 
 const Styles = styled.div`
   padding: 1rem;
+  
+  .table-striped{ 
+    .tbody .tr-striped {
+        background-color: rgba(0,0,0,.03);
+    }
+  }
 
   .table {
     display: inline-block;
     border-spacing: 0;
-    border: 1px solid black;
+    border: 1px solid #ddd;
     word-break: break-word;
     width: 100%;
 
@@ -24,6 +30,7 @@ const Styles = styled.div`
     .th{
         display: inline-block;
         box-sizing: border-box;
+        font-weight:bold;
     }
 
     .td{
@@ -31,26 +38,29 @@ const Styles = styled.div`
             padding: 5px;
             text-align: right;
         }
+        .mr-t-10{
+            margin-top:10px;
+        }
     }
 
     .th,
     .td {
       margin: 0;
-      border-bottom: 1px solid black;
-      border-right: 1px solid black;
+      border-bottom: 1px solid #ddd;
+      border-right: 1px solid #ddd;
 
       .cell-padding{
           padding: 5px;
       }
 
       :last-child {
-        border-right: 1px solid black;
+        border-right: 1px solid #ddd;
       }
     }
   }
 `
 
-function DataTable({ columns, rows, defaultColumnWidth }) {
+function DataTable({ columns, rows, defaultColumnWidth, onSelectionChange, onRowClick }) {
     const columnData = React.useMemo(
         () => columns && columns.length > 0 ? columns.filter(item => !item.isHidden).map((item, index) => {
             return {
@@ -75,10 +85,14 @@ function DataTable({ columns, rows, defaultColumnWidth }) {
     )
 
     const rowData = React.useMemo(() => formatData(rows), [rows])
-    console.log("columnData", columnData, JSON.stringify(rowData))
     return (
         <Styles>
-            <Table columns={columnData} data={rowData} defaultColumnWidth={defaultColumnWidth} />
+            <Table
+                columns={columnData}
+                data={rowData}
+                defaultColumnWidth={defaultColumnWidth}
+                onSelectionChange={onSelectionChange}
+                onRowClick={onRowClick} />
         </Styles>
     )
 }
