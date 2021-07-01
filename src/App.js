@@ -7,6 +7,25 @@ import AppErrorBoundary from './components/AppErrorBoundary'
 import columns from './data/columns';
 import './App.css';
 
+function AppContent({ isLoadingData, error, data, onSelectionChange, onRowClick }) {
+  if (isLoadingData) {
+    return <div>Loading . . .</div>
+  } else if (error && error.message) {
+    return <div>Failed {error && error.message}</div>
+  } else if (data && data.length > 0) {
+    return <DataTable
+      columns={columns} // column headers for table
+      rows={data} // data rows for table
+      defaultColumnWidth={300} // set default column width if width not specified
+      onSelectionChange={onSelectionChange} // trigger when row selection changed using left chckboxes
+      onRowClick={onRowClick} // trigger when a row is clicked, return row data and index
+      globalSearch={true} // enable search on the entire data
+    />
+  } else {
+    return <div />
+  }
+}
+
 class App extends Component {
   constructor(props) {
     super(props);
@@ -38,24 +57,6 @@ class App extends Component {
   render() {
     const { selectedRows, lastRowClickedData, lastRowClickedIndex } = this.state
     const { isLoadingData, error, data } = this.props
-    const AppContent = () => {
-      if (isLoadingData) {
-        return <div>Loading . . .</div>
-      } else if (error && error.message) {
-        return <div>Failed {error && error.message}</div>
-      } else if (data && data.length > 0) {
-        return <DataTable
-          columns={columns} // column headers for table
-          rows={data} // data rows for table
-          defaultColumnWidth={300} // set default column width if width not specified
-          onSelectionChange={this.onSelectionChange} // trigger when row selection changed using left chckboxes
-          onRowClick={this.onRowClick} // trigger when a row is clicked, return row data and index
-          globalSearch={true} // enable search on the entire data
-        />
-      } else {
-        return <div />
-      }
-    }
 
 
     return (
@@ -71,26 +72,13 @@ class App extends Component {
             lastRowClickedData={lastRowClickedData}
             lastRowClickedIndex={lastRowClickedIndex}
           />
-          {isLoadingData ? <div>Loading . . .</div>
-            : (error && error.message) ?
-              <div>Failed {error && error.message}</div>
-              : (data && data.length > 0) ?
-                <DataTable
-                  columns={columns} // column headers for table
-                  rows={data} // data rows for table
-                  defaultColumnWidth={300} // set default column width if width not specified
-                  onSelectionChange={this.onSelectionChange} // trigger when row selection changed using left chckboxes
-                  onRowClick={this.onRowClick} // trigger when a row is clicked, return row data and index
-                  globalSearch={true} // enable search on the entire data
-                /> : <div />
-          }
-          {/* <AppContent
-          // isLoadingData={isLoadingData}
-          // error={error}
-          // data={data}
-          // onSelectionChange={this.onSelectionChange}
-          // onRowClick={this.onRowClick}
-          /> */}
+          <AppContent
+            isLoadingData={isLoadingData}
+            error={error}
+            data={data}
+            onSelectionChange={this.onSelectionChange}
+            onRowClick={this.onRowClick}
+          />
         </AppErrorBoundary>
       </div>
     );
