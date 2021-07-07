@@ -33,8 +33,8 @@ function apiAction({
   method = 'GET',
   data = null,
   accessToken = null,
-  onSuccess = () => { },
-  onFailure = () => { },
+  onSuccess = () => {},
+  onFailure = () => {},
   label = '',
   headersOverride = null,
 }) {

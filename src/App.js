@@ -3,26 +3,28 @@ import { connect } from 'react-redux';
 import { fetchProductList } from './actions';
 import DataTable from './components/DataTable';
 import Alerts from './components/Alerts';
-import AppErrorBoundary from './components/AppErrorBoundary'
+import AppErrorBoundary from './components/AppErrorBoundary';
 import columns from './data/columns';
 import './App.css';
 
 function AppContent({ isLoadingData, error, data, onSelectionChange, onRowClick }) {
   if (isLoadingData) {
-    return <div>Loading . . .</div>
+    return <div>Loading . . .</div>;
   } else if (error && error.message) {
-    return <div>Failed {error && error.message}</div>
+    return <div>Failed {error && error.message}</div>;
   } else if (data && data.length > 0) {
-    return <DataTable
-      columns={columns} // column headers for table
-      rows={data} // data rows for table
-      defaultColumnWidth={300} // set default column width if width not specified
-      onSelectionChange={onSelectionChange} // trigger when row selection changed using left chckboxes
-      onRowClick={onRowClick} // trigger when a row is clicked, return row data and index
-      globalSearch={true} // enable search on the entire data
-    />
+    return (
+      <DataTable
+        columns={columns} // column headers for table
+        rows={data} // data rows for table
+        defaultColumnWidth={300} // set default column width if width not specified
+        onSelectionChange={onSelectionChange} // trigger when row selection changed using left chckboxes
+        onRowClick={onRowClick} // trigger when a row is clicked, return row data and index
+        globalSearch={true} // enable search on the entire data
+      />
+    );
   } else {
-    return <div />
+    return <div />;
   }
 }
 
@@ -55,9 +57,8 @@ class App extends Component {
   };
 
   render() {
-    const { selectedRows, lastRowClickedData, lastRowClickedIndex } = this.state
-    const { isLoadingData, error, data } = this.props
-
+    const { selectedRows, lastRowClickedData, lastRowClickedIndex } = this.state;
+    const { isLoadingData, error, data } = this.props;
 
     return (
       <div className="App">

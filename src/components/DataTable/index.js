@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import Table from './ReactTable';
 import formatData from './formatData';
-import RowSelector from './RowSelector'
+import RowSelector from './RowSelector';
 
 const Styles = styled.div`
   padding: 1rem;
@@ -35,7 +35,7 @@ const Styles = styled.div`
       justify-content: center;
       align-items: center;
 
-      .action-icon{
+      .action-icon {
         color: rgb(34, 167, 208);
         cursor: pointer;
       }
@@ -68,7 +68,6 @@ const Styles = styled.div`
   }
 `;
 
-
 function DataTable({
   columns,
   rows,
@@ -77,60 +76,57 @@ function DataTable({
   onRowClick,
   globalSearch,
 }) {
-
   // use memoized hook to create columns data for react-table component to avoid memory leaks
   const columnData = React.useMemo(
     () =>
       columns && columns.length > 0
-        ? [{// Column for enabling user to select rows using checkboxes
-          id: 'selection',
-          Header: ({ getToggleAllRowsSelectedProps }) => (
-            <div>
-              <RowSelector
-                {...getToggleAllRowsSelectedProps()}
-              />
-            </div>
-          ),
-          width: 100,
-          Cell: ({ row }) => (
-            <div>
-              <RowSelector
-                {...row.getToggleRowSelectedProps()}
-              />
-            </div>
-          ),
-        },
-        ...columns.filter((item) => !item.isHidden)
-          .map((item) => {
-            return {
-              ...item,
-              Header: () => {
-                return <div className="cell-padding">{item.label}</div>;
-              },
-              Cell: ({ value }) => {
-                // cell wrappers for numeric, isImagem isLink type fields
-                return item.numeric ? (
-                  <div className="cell-rt-align">{value}</div>
-                ) :
-                  (
-                    <div className="cell-padding">
-                      {item.isImage && typeof value === 'string' ? (
-                        <img width={25} src={value} alt="thumbnail" />
-                      ) : item.isLink && typeof value === 'string' ? (
-                        <a href={`${value}`} target="_blank" rel="noreferrer">
-                          Open Link &#xbb;
-                        </a>
-                      ) : (
-                            value
-                          )}
-                    </div>
-                  );
-              },
-              width: item.width || defaultColumnWidth,
-              accessor: item.id,
-            };
-          })
-        ]
+        ? [
+            {
+              // Column for enabling user to select rows using checkboxes
+              id: 'selection',
+              Header: ({ getToggleAllRowsSelectedProps }) => (
+                <div>
+                  <RowSelector {...getToggleAllRowsSelectedProps()} />
+                </div>
+              ),
+              width: 100,
+              Cell: ({ row }) => (
+                <div>
+                  <RowSelector {...row.getToggleRowSelectedProps()} />
+                </div>
+              ),
+            },
+            ...columns
+              .filter((item) => !item.isHidden)
+              .map((item) => {
+                return {
+                  ...item,
+                  Header: () => {
+                    return <div className="cell-padding">{item.label}</div>;
+                  },
+                  Cell: ({ value }) => {
+                    // cell wrappers for numeric, isImagem isLink type fields
+                    return item.numeric ? (
+                      <div className="cell-rt-align">{value}</div>
+                    ) : (
+                      <div className="cell-padding">
+                        {item.isImage && typeof value === 'string' ? (
+                          <img width={25} src={value} alt="thumbnail" />
+                        ) : item.isLink && typeof value === 'string' ? (
+                          <a href={`${value}`} target="_blank" rel="noreferrer">
+                            Open Link &#xbb;
+                          </a>
+                        ) : (
+                          value
+                        )}
+                      </div>
+                    );
+                  },
+                  width: item.width || defaultColumnWidth,
+                  accessor: item.id,
+                };
+              }),
+          ]
         : [],
     [columns, defaultColumnWidth],
   );

@@ -4,8 +4,8 @@ A Data table component to handle large json data(>50k) converted to Table with i
 
 Check [Demo Here](https://shabnam701.github.io/super-data-table/)
 
-
 DataTable component API
+
 ```
 <DataTable
   columns={[{ // column headers for table
